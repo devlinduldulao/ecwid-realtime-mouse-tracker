@@ -18,6 +18,24 @@ Good fits:
 3. Use the dashboard-generated snippet to reference the hosted storefront files.
 4. Paste that snippet into Ecwid Design → Custom JavaScript.
 
+## GitHub Pages with GitHub Actions
+
+This repository includes a free GitHub Pages deployment workflow in `.github/workflows/deploy-pages.yml`.
+
+1. Push the repository to GitHub and keep the default branch as `main`.
+2. In GitHub, open Settings → Pages.
+3. Under Build and deployment, set Source to `GitHub Actions`.
+4. Push to `main` or run the `Deploy To GitHub Pages` workflow manually from the Actions tab.
+5. Wait for the workflow to finish, then open `https://<github-username>.github.io/<repository-name>/public/index.html`.
+
+For this repository URL, the Pages URL will be:
+
+```text
+https://devlinduldulao.github.io/ecwid-realtime-mouse-tracker/public/index.html
+```
+
+The dashboard now generates storefront snippet URLs using its current hosted base URL, which makes the same build work on GitHub Pages repository paths.
+
 Run `npm run build` first if you want a clean deployable folder. Upload the contents of `dist/` to your static host.
 
 ## Required hosted files

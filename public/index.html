@@ -460,14 +460,14 @@
 
       <article class="panel span-12">
         <h2>Storefront Install Snippet</h2>
-        <p>Host this repo as static files, then use the generated snippet inside Ecwid Design → Custom JavaScript. The snippet points to the shared state helper and storefront tracker.</p>
+        <p>Host this repo as static files, then use the generated snippet inside Ecwid Design → Custom JavaScript. The snippet points to the shared state helper and storefront tracker using the current hosted base URL.</p>
         <textarea id="install-snippet" readonly></textarea>
-        <div class="code-help">Replace <span class="mono-inline">https://YOUR-STATIC-HOST</span> with the public static URL where this repo is hosted.</div>
+        <div class="code-help">Review the generated host before pasting it into Ecwid. On GitHub Pages it should match your published repository URL.</div>
       </article>
     </section>
   </main>
 
-  <script src="/src/shared/browser-state.js"></script>
-  <script src="/src/admin/app.js"></script>
+  <script src="../src/shared/browser-state.js"></script>
+  <script src="../src/admin/app.js"></script>
 </body>
 </html>

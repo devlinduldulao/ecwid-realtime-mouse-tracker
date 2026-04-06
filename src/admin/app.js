@@ -238,17 +238,26 @@
   }
 
   function updateInstallSnippet() {
+    const hostedBaseUrl = getHostedBaseUrl();
     const snippet = [
-      '<script src="https://YOUR-STATIC-HOST/src/shared/browser-state.js"></script>',
+      '<script src="' + hostedBaseUrl + '/src/shared/browser-state.js"></script>',
       '<script>',
       'window.RMTEcwidConfig = {',
       '  channelKey: ' + JSON.stringify(settings.channelKey),
       '};',
       '</script>',
-      '<script src="https://YOUR-STATIC-HOST/src/storefront/custom-storefront.js"></script>',
+      '<script src="' + hostedBaseUrl + '/src/storefront/custom-storefront.js"></script>',
     ].join('\n');
 
     installSnippetNode.value = snippet;
+  }
+
+  function getHostedBaseUrl() {
+    try {
+      return new URL('..', window.location.href).href.replace(/\/$/, '');
+    } catch (error) {
+      return 'https://YOUR-STATIC-HOST';
+    }
   }
 
   function startPolling() {

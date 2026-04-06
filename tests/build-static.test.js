@@ -23,3 +23,22 @@ test('build-static creates the expected deployable files', () => {
   assert.equal(fs.existsSync(path.join(distRoot, 'README.md')), true);
   assert.equal(fs.existsSync(path.join(distRoot, 'LICENSE')), true);
 });
+
+test('build-static keeps public pages compatible with GitHub Pages repository paths', () => {
+  execFileSync(process.execPath, ['scripts/build-static.js'], {
+    cwd: projectRoot,
+    stdio: 'pipe',
+  });
+
+  const adminHtml = fs.readFileSync(path.join(distRoot, 'public', 'index.html'), 'utf8');
+  const storefrontHtml = fs.readFileSync(path.join(distRoot, 'public', 'storefront-test.html'), 'utf8');
+
+  assert.match(adminHtml, /<script src="\.\.\/src\/shared\/browser-state\.js"><\/script>/);
+  assert.match(adminHtml, /<script src="\.\.\/src\/admin\/app\.js"><\/script>/);
+  assert.doesNotMatch(adminHtml, /<script src="\/src\//);
+
+  assert.match(storefrontHtml, /<link rel="stylesheet" href="\.\.\/src\/storefront\/custom-storefront\.css">/);
+  assert.match(storefrontHtml, /<script src="\.\.\/src\/shared\/browser-state\.js"><\/script>/);
+  assert.match(storefrontHtml, /<script src="\.\.\/src\/storefront\/custom-storefront\.js"><\/script>/);
+  assert.doesNotMatch(storefrontHtml, /(?:href|src)="\/src\//);
+});

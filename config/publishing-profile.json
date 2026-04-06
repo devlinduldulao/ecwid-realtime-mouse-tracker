@@ -1,0 +1,37 @@
+{
+  "appName": "Realtime Mouse Tracker for Ecwid",
+  "tagline": "Merchant-facing live cursor preview and same-browser storefront self-test for Ecwid.",
+  "shortDescription": "Merchant-only Ecwid dashboard for previewing cursor activity and running same-browser storefront friction checks without a database or always-on backend.",
+  "category": "Analytics / merchant tools / storefront testing",
+  "hostBaseUrl": "https://devlinduldulao.github.io/ecwid-realtime-mouse-tracker",
+  "businessName": "Configured marketplace publisher",
+  "supportEmail": "",
+  "supportResponseWindow": "Reply within 2 business days",
+  "supportTimezone": "UTC",
+  "supportUrl": "",
+  "privacyPolicyUrl": "",
+  "termsOfServiceUrl": "",
+  "demoUrl": "/public/index.html",
+  "legalEffectiveDate": "2026-04-06",
+  "privacyContactBlurb": "Contact the support channel listed in the live marketplace listing for privacy and data handling requests.",
+  "termsWarrantyBlurb": "This app is provided as described in the active marketplace listing and any separate merchant agreement published with the app.",
+  "screenshots": [
+    "assets/marketplace/screenshots/dashboard-live.png",
+    "assets/marketplace/screenshots/dashboard-preview.png",
+    "assets/marketplace/screenshots/setup-snippet.png"
+  ],
+  "assets": {
+    "iconSource": "assets/marketplace/app-icon.svg",
+    "iconPng": "assets/marketplace/app-icon.png",
+    "listingBannerSource": "assets/marketplace/listing-banner.svg",
+    "listingBannerPng": "assets/marketplace/listing-banner.png"
+  },
+  "technicalNotes": {
+    "hosting": "Static HTTPS hosting",
+    "backendRequired": false,
+    "databaseRequired": false,
+    "redisRequired": false,
+    "primarySurface": "Merchant dashboard",
+    "storefrontBehavior": "Browser-local storefront event capture for preview mode and same-browser merchant self-tests"
+  }
+}

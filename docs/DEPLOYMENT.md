@@ -26,13 +26,15 @@ This repository includes a free GitHub Pages deployment workflow in `.github/wor
 2. In GitHub, open Settings → Pages.
 3. Under Build and deployment, set Source to `GitHub Actions`.
 4. Push to `main` or run the `Deploy To GitHub Pages` workflow manually from the Actions tab.
-5. Wait for the workflow to finish, then open `https://<github-username>.github.io/<repository-name>/public/index.html`.
+5. Wait for the workflow to finish, then open `https://<github-username>.github.io/<repository-name>/`.
 
 For this repository URL, the Pages URL will be:
 
 ```text
-https://devlinduldulao.github.io/ecwid-realtime-mouse-tracker/public/index.html
+https://devlinduldulao.github.io/ecwid-realtime-mouse-tracker/
 ```
+
+That root URL redirects to `public/index.html`, so the site is easier to find while keeping the Ecwid app page target unchanged.
 
 The dashboard now generates storefront snippet URLs using its current hosted base URL, which makes the same build work on GitHub Pages repository paths.
 

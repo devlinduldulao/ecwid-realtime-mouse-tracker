@@ -11,6 +11,7 @@ This repository is technically ready for CI, build, and static deployment. It no
 - Merchant dashboard and preview mode are implemented
 - Draft listing icon, banner, and screenshots are included
 - Draft marketplace copy is included
+- Draft publishing profile metadata is included in `config/publishing-profile.json`
 
 ## Required publishing prep
 
@@ -36,6 +37,7 @@ Finalize:
 - Keywords or category tags if requested
 
 Draft copy is available in [docs/PUBLISHING-COPY.md](./PUBLISHING-COPY.md).
+- Draft structured metadata is available in `config/publishing-profile.json`.
 - Support contact
 - Privacy policy URL
 - Terms of service URL if required

@@ -18,6 +18,7 @@ test('build-static creates the expected deployable files', () => {
   assert.equal(fs.existsSync(path.join(distRoot, 'assets', 'marketplace', 'screenshots', 'dashboard-live.png')), true);
   assert.equal(fs.existsSync(path.join(distRoot, 'public', 'index.html')), true);
   assert.equal(fs.existsSync(path.join(distRoot, 'public', 'storefront-test.html')), true);
+  assert.equal(fs.existsSync(path.join(distRoot, 'index.html')), true);
   assert.equal(fs.existsSync(path.join(distRoot, 'src', 'shared', 'browser-state.js')), true);
   assert.equal(fs.existsSync(path.join(distRoot, 'src', 'storefront', 'custom-storefront.js')), true);
   assert.equal(fs.existsSync(path.join(distRoot, 'README.md')), true);
@@ -32,6 +33,10 @@ test('build-static keeps public pages compatible with GitHub Pages repository pa
 
   const adminHtml = fs.readFileSync(path.join(distRoot, 'public', 'index.html'), 'utf8');
   const storefrontHtml = fs.readFileSync(path.join(distRoot, 'public', 'storefront-test.html'), 'utf8');
+  const rootIndexHtml = fs.readFileSync(path.join(distRoot, 'index.html'), 'utf8');
+
+  assert.match(rootIndexHtml, /window\.location\.replace\('\.\/public\/index\.html'/);
+  assert.match(rootIndexHtml, /href="\.\/public\/index\.html"/);
 
   assert.match(adminHtml, /<script src="\.\.\/src\/shared\/browser-state\.js"><\/script>/);
   assert.match(adminHtml, /<script src="\.\.\/src\/admin\/app\.js"><\/script>/);

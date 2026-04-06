@@ -35,8 +35,11 @@ test('build-static keeps public pages compatible with GitHub Pages repository pa
   const storefrontHtml = fs.readFileSync(path.join(distRoot, 'public', 'storefront-test.html'), 'utf8');
   const rootIndexHtml = fs.readFileSync(path.join(distRoot, 'index.html'), 'utf8');
 
-  assert.match(rootIndexHtml, /window\.location\.replace\('\.\/public\/index\.html'/);
-  assert.match(rootIndexHtml, /href="\.\/public\/index\.html"/);
+  assert.match(rootIndexHtml, /<link rel="icon" type="image\/svg\+xml" href="\.\/public\/logo\.svg">/);
+  assert.match(rootIndexHtml, /<script src="\.\/src\/shared\/browser-state\.js"><\/script>/);
+  assert.match(rootIndexHtml, /<script src="\.\/src\/admin\/app\.js"><\/script>/);
+  assert.doesNotMatch(rootIndexHtml, /window\.location\.replace\('/);
+  assert.doesNotMatch(rootIndexHtml, /http-equiv="refresh"/);
 
   assert.match(adminHtml, /<script src="\.\.\/src\/shared\/browser-state\.js"><\/script>/);
   assert.match(adminHtml, /<script src="\.\.\/src\/admin\/app\.js"><\/script>/);

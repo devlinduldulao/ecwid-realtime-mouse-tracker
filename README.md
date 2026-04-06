@@ -44,6 +44,7 @@ npm run preview
 
 Then open:
 
+- `http://localhost:4173/`
 - `http://localhost:4173/public/index.html`
 - `http://localhost:4173/public/storefront-test.html`
 
@@ -51,7 +52,7 @@ Replace `STORE_ID` in [public/storefront-test.html](public/storefront-test.html)
 
 ## Merchant workflow
 
-1. Open the admin app at [public/index.html](public/index.html) inside the Ecwid admin iframe or in a normal browser tab.
+1. Open the admin app at the hosted site root or at [public/index.html](public/index.html) inside the Ecwid admin iframe or in a normal browser tab.
 2. Save a tracking channel in the dashboard settings.
 3. Host this repo as static files.
 4. Paste the generated snippet from the dashboard into Ecwid Design → Custom JavaScript.
@@ -78,7 +79,7 @@ tests/
 
 ## Deployment
 
-Use any static hosting provider. The Ecwid app page should point to your hosted [public/index.html](public/index.html). The storefront helper snippet should reference your hosted [src/shared/browser-state.js](src/shared/browser-state.js) and [src/storefront/custom-storefront.js](src/storefront/custom-storefront.js).
+Use any static hosting provider. The Ecwid app page can point to your hosted site root or to [public/index.html](public/index.html). The storefront helper snippet should reference your hosted [src/shared/browser-state.js](src/shared/browser-state.js) and [src/storefront/custom-storefront.js](src/storefront/custom-storefront.js).
 
 `npm run build` produces a deployable `dist/` directory that preserves the same `public/` and `src/` paths expected by the dashboard and storefront snippet.
 

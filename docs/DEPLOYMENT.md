@@ -34,7 +34,7 @@ For this repository URL, the Pages URL will be:
 https://devlinduldulao.github.io/ecwid-realtime-mouse-tracker/
 ```
 
-That root URL redirects to `public/index.html`, so the site is easier to find while keeping the Ecwid app page target unchanged.
+That root URL now serves the merchant dashboard directly. The legacy `public/index.html` path still works if you want to keep an existing Ecwid app page URL unchanged.
 
 The dashboard now generates storefront snippet URLs using its current hosted base URL, which makes the same build work on GitHub Pages repository paths.
 
@@ -58,7 +58,7 @@ https://your-static-host.example/src/storefront/custom-storefront.css
 
 ## Ecwid configuration
 
-- App page URL: your hosted `public/index.html`
+- App page URL: your hosted site root or hosted `public/index.html`
 - Storefront custom JavaScript: generated snippet from the dashboard
 - Storefront custom CSS: optional hosted or pasted contents of [src/storefront/custom-storefront.css](src/storefront/custom-storefront.css)
 

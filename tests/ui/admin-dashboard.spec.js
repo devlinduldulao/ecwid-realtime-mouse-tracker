@@ -36,6 +36,19 @@ async function saveAdminSettings(page, values) {
 }
 
 test.describe('admin dashboard', () => {
+  test('loads from the site root without redirecting to public/index.html', async ({ page }) => {
+    const pageErrors = [];
+    page.on('pageerror', (error) => pageErrors.push(error.message));
+
+    await page.goto('/');
+
+    await expect(page).toHaveURL(/\/$/);
+    await expect(page.getByRole('heading', { name: 'Realtime Mouse Tracker for Ecwid' })).toBeVisible();
+    await expect(page.locator('#install-snippet')).toHaveValue(/http:\/\/127\.0\.0\.1:\d+\/src\/shared\/browser-state\.js/);
+
+    expect(pageErrors).toEqual([]);
+  });
+
   test('loads in standalone mode without Ecwid payload and shows empty live state', async ({ page }) => {
     const pageErrors = [];
     page.on('pageerror', (error) => pageErrors.push(error.message));

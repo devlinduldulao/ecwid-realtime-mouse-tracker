@@ -5,23 +5,16 @@ const projectRoot = path.resolve(__dirname, '..');
 const distRoot = path.join(projectRoot, 'dist');
 const directoriesToCopy = ['assets', 'public', 'src'];
 const filesToCopy = ['README.md', 'LICENSE', '_headers'];
-const rootIndexHtml = `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Realtime Mouse Tracker for Ecwid</title>
-  <meta http-equiv="refresh" content="0; url=./public/index.html">
-  <link rel="canonical" href="./public/index.html">
-  <script>
-    window.location.replace('./public/index.html' + window.location.search + window.location.hash);
-  </script>
-</head>
-<body>
-  <p>Redirecting to <a href="./public/index.html">the dashboard</a>...</p>
-</body>
-</html>
-`;
+
+function buildRootIndexHtml() {
+  const publicIndexPath = path.join(projectRoot, 'public', 'index.html');
+  const publicIndexHtml = fs.readFileSync(publicIndexPath, 'utf8');
+
+  return publicIndexHtml
+    .replace('href="logo.svg"', 'href="./public/logo.svg"')
+    .replace('src="../src/shared/browser-state.js"', 'src="./src/shared/browser-state.js"')
+    .replace('src="../src/admin/app.js"', 'src="./src/admin/app.js"');
+}
 
 fs.rmSync(distRoot, { recursive: true, force: true });
 fs.mkdirSync(distRoot, { recursive: true });
@@ -36,6 +29,6 @@ for (const file of filesToCopy) {
   fs.copyFileSync(path.join(projectRoot, file), path.join(distRoot, file));
 }
 
-fs.writeFileSync(path.join(distRoot, 'index.html'), rootIndexHtml);
+fs.writeFileSync(path.join(distRoot, 'index.html'), buildRootIndexHtml());
 
 console.log('Built static output in dist/');

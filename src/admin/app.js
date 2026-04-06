@@ -29,6 +29,9 @@
   const saveButton = document.getElementById('save-btn');
   const previewStorageKey = 'rmt-ecwid-preview-mode';
   const previewScenarioStorageKey = 'rmt-ecwid-preview-scenario';
+  const currentScriptUrl = document.currentScript && document.currentScript.src
+    ? new URL(document.currentScript.src, window.location.href)
+    : null;
 
   let storeId = 'demo-store';
   let storeLabel = 'Standalone preview';
@@ -254,7 +257,17 @@
 
   function getHostedBaseUrl() {
     try {
-      return new URL('..', window.location.href).href.replace(/\/$/, '');
+      if (currentScriptUrl) {
+        return new URL('../..', currentScriptUrl).href.replace(/\/$/, '');
+      }
+
+      const currentPath = window.location.pathname;
+
+      if (currentPath.endsWith('/public/index.html')) {
+        return new URL('..', window.location.href).href.replace(/\/$/, '');
+      }
+
+      return new URL('.', window.location.href).href.replace(/\/$/, '');
     } catch (error) {
       return 'https://YOUR-STATIC-HOST';
     }

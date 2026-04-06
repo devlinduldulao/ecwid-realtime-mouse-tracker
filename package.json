@@ -7,7 +7,7 @@
     "capture:marketplace": "node scripts/capture-marketplace-screenshots.js",
     "preview": "npm run build && python3 -m http.server 4173 -d dist",
     "lint": "node --check src/shared/browser-state.js && node --check src/admin/app.js && node --check src/storefront/custom-storefront.js",
-    "test:unit": "node --test tests/**/*.test.js",
+    "test:unit": "node --test tests/*.test.js",
     "test:ui": "playwright test",
     "test": "npm run test:unit && npm run test:ui"
   },

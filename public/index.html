@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Permissions-Policy" content="accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()">
   <title>Realtime Mouse Tracker for Ecwid</title>
   <link rel="icon" type="image/svg+xml" href="logo.svg">
   <link rel="stylesheet" href="https://djqizrxa6f10j.cloudfront.net/ecwid-sdk/css/1.3.20/ecwid-app-ui.css">
@@ -335,6 +337,37 @@
         grid-column: span 12;
       }
     }
+
+    @media (max-width: 768px) {
+      body { padding: 16px; }
+      .hero { padding: 20px; }
+      .panel { padding: 16px; }
+      .field-grid { grid-template-columns: 1fr; }
+      .metric-grid { grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); }
+      .mode-banner { flex-direction: column; gap: 8px; }
+    }
+
+    @media (max-width: 480px) {
+      body { padding: 10px; }
+      .hero h1 { font-size: 1.5rem; }
+      .chip-list { gap: 6px; }
+      .chip, .signal-tag { font-size: 0.78rem; padding: 5px 8px; }
+      .button-row { flex-direction: column; }
+      .button-row button { width: 100%; }
+      .metric-card strong { font-size: 1.5rem; }
+      th, td { padding: 8px 10px; font-size: 0.84rem; }
+    }
+
+    .field-error {
+      color: #b42318;
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-top: 4px;
+    }
+
+    input:invalid, input.input-error {
+      border-color: #b42318;
+    }
   </style>
 </head>
 <body>
@@ -377,7 +410,7 @@
           </div>
           <div class="mono-inline" data-rmt-last-updated>Waiting for data...</div>
         </div>
-        <div class="metric-grid">
+        <div class="metric-grid" aria-live="polite" aria-atomic="true">
           <div class="metric-card"><span>Active Visitors</span><strong data-rmt-metric="active_visitors">0</strong></div>
           <div class="metric-card"><span>Queued Visitors</span><strong data-rmt-metric="queued_visitors">0</strong></div>
           <div class="metric-card"><span>Events Per Minute</span><strong data-rmt-metric="events_per_minute">0</strong></div>

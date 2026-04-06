@@ -109,6 +109,15 @@
   }
 
   function saveSettings() {
+    clearFieldErrors();
+
+    const errors = validateSettingsInputs();
+    if (errors.length) {
+      errors.forEach(function (err) { markFieldError(err.field, err.message); });
+      showStatus('Please fix the highlighted fields.', true);
+      return;
+    }
+
     settings = stateApi.saveSettings(storeId, {
       enabled: trackerEnabledNode.checked,
       channelKey: channelKeyNode.value,
@@ -123,6 +132,47 @@
     stateApi.ping(settings.channelKey);
     showStatus('Saved locally for this merchant browser session.', false);
     refreshSnapshot();
+  }
+
+  function validateSettingsInputs() {
+    const errors = [];
+    const channelRaw = channelKeyNode.value.trim();
+
+    if (!channelRaw) {
+      errors.push({ field: channelKeyNode, message: 'Channel key cannot be empty.' });
+    } else if (/[^a-zA-Z0-9\-]/.test(channelRaw)) {
+      errors.push({ field: channelKeyNode, message: 'Only letters, numbers, and hyphens are allowed.' });
+    }
+
+    const pollRaw = Number(pollIntervalNode.value);
+    if (!Number.isFinite(pollRaw) || pollRaw < 500 || pollRaw > 10000) {
+      errors.push({ field: pollIntervalNode, message: 'Must be between 500 and 10000.' });
+    }
+
+    const retentionRaw = Number(retentionNode.value);
+    if (!Number.isFinite(retentionRaw) || retentionRaw < 30 || retentionRaw > 600) {
+      errors.push({ field: retentionNode, message: 'Must be between 30 and 600.' });
+    }
+
+    const maxVisitorsRaw = Number(maxVisitorsNode.value);
+    if (!Number.isFinite(maxVisitorsRaw) || maxVisitorsRaw < 1 || maxVisitorsRaw > 50) {
+      errors.push({ field: maxVisitorsNode, message: 'Must be between 1 and 50.' });
+    }
+
+    return errors;
+  }
+
+  function markFieldError(inputNode, message) {
+    inputNode.classList.add('input-error');
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'field-error';
+    errorDiv.textContent = message;
+    inputNode.parentNode.appendChild(errorDiv);
+  }
+
+  function clearFieldErrors() {
+    document.querySelectorAll('.field-error').forEach(function (el) { el.remove(); });
+    document.querySelectorAll('.input-error').forEach(function (el) { el.classList.remove('input-error'); });
   }
 
   function refreshSnapshot() {

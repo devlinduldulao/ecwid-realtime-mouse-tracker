@@ -3,11 +3,12 @@
  *
  * These styles stay intentionally light so the shopper-facing storefront is
  * not visually altered beyond a subtle badge that confirms the tracker script
- * is loaded.
+ * is loaded. The badge only shows when the self-test class is present,
+ * ensuring it never appears for real shoppers.
  */
 
-.rmt-ecwid-ready .ecwid-productBrowser::before {
-  content: 'Realtime Mouse Tracker active';
+.rmt-ecwid-ready.rmt-self-test .ecwid-productBrowser::before {
+  content: 'Tracker active (self-test)';
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;

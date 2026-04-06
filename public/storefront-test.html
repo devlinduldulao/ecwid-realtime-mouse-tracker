@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Permissions-Policy" content="accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()">
   <title>Ecwid Storefront Self-Test</title>
   <link rel="stylesheet" href="../src/storefront/custom-storefront.css">
   <style>
@@ -43,7 +45,8 @@
 
   <script>
     window.RMTEcwidConfig = {
-      channelKey: 'ecwid-demo-store'
+      channelKey: 'ecwid-demo-store',
+      selfTest: true
     };
   </script>
   <script src="https://app.ecwid.com/script.js?STORE_ID" charset="utf-8"></script>

@@ -75,6 +75,10 @@
   if (window.Ecwid && window.Ecwid.OnAPILoaded) {
     window.Ecwid.OnAPILoaded.add(() => {
       document.documentElement.classList.add('rmt-ecwid-ready');
+
+      if (isSelfTestPage()) {
+        document.documentElement.classList.add('rmt-self-test');
+      }
     });
 
     window.Ecwid.OnPageLoaded.add((page) => {
@@ -119,6 +123,7 @@
 
     if (!settings.enabled) {
       queuedEvents.length = 0;
+      document.documentElement.classList.remove('rmt-ecwid-ready', 'rmt-self-test');
       return;
     }
 
@@ -207,5 +212,10 @@
     return recentClicks.length >= 3 && recentClicks.every((click) => {
       return Math.abs(click.x - x) < 24 && Math.abs(click.y - y) < 24;
     });
+  }
+
+  function isSelfTestPage() {
+    return window.location.pathname.indexOf('storefront-test') !== -1 ||
+      (window.RMTEcwidConfig && window.RMTEcwidConfig.selfTest === true);
   }
 })();

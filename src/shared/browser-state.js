@@ -272,7 +272,18 @@
   }
 
   function writeJson(storage, key, value) {
-    storage.setItem(key, JSON.stringify(value));
+    try {
+      storage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+      if (error && (error.name === 'QuotaExceededError' || error.code === 22)) {
+        storage.removeItem(key);
+        try {
+          storage.setItem(key, JSON.stringify(value));
+        } catch (retryError) {
+          return;
+        }
+      }
+    }
   }
 
   function loadSettings(storeId, options) {

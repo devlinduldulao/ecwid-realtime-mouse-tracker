@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ecwid Storefront Self-Test</title>
+  <link rel="stylesheet" href="/src/storefront/custom-storefront.css">
+  <style>
+    body {
+      margin: 0 auto;
+      max-width: 1200px;
+      padding: 24px;
+      color: #1f1c18;
+      background: linear-gradient(180deg, #fbf7f2 0%, #f2eadf 100%);
+      font-family: "Avenir Next", Avenir, "Segoe UI", sans-serif;
+    }
+
+    .banner {
+      margin-bottom: 24px;
+      padding: 16px 18px;
+      border-radius: 18px;
+      border: 1px solid #decfb9;
+      background: rgba(255, 250, 244, 0.94);
+    }
+
+    .banner strong {
+      display: block;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.78rem;
+      color: #0d7a5f;
+    }
+  </style>
+</head>
+<body>
+  <div class="banner">
+    <strong>Merchant self-test</strong>
+    Open the Ecwid admin app in another tab with the same browser profile and use the same channel key below. This page simulates the free, browser-only live tracking flow.
+  </div>
+
+  <div id="my-store-STORE_ID"></div>
+
+  <script>
+    window.RMTEcwidConfig = {
+      channelKey: 'ecwid-demo-store'
+    };
+  </script>
+  <script src="https://app.ecwid.com/script.js?STORE_ID" charset="utf-8"></script>
+  <script>
+    if (typeof xProductBrowser === 'function') {
+      xProductBrowser(
+        'categoriesPerRow=3',
+        'views=grid(20,3) list(60) table(60)',
+        'categoryView=grid',
+        'searchView=list',
+        'id=my-store-STORE_ID'
+      );
+    }
+  </script>
+  <script src="/src/shared/browser-state.js"></script>
+  <script src="/src/storefront/custom-storefront.js"></script>
+</body>
+</html>

@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Realtime Mouse Tracker for Ecwid</title>
+  <link rel="stylesheet" href="https://djqizrxa6f10j.cloudfront.net/ecwid-sdk/css/1.3.20/ecwid-app-ui.css">
+  <script src="https://djqizrxa6f10j.cloudfront.net/ecwid-sdk/js/1.2.9/ecwid-app.js"></script>
+  <style>
+    :root {
+      --page-bg: #ffffff;
+      --card-bg: #ffffff;
+      --ink: #333333; /* Charcoal gray */
+      --muted: #666666;
+      --line: #e6e6e6;
+      --accent: #E52222; /* Fire Red */
+      --accent-soft: rgba(229, 34, 34, 0.08); /* Fire Red low opacity */
+      --warning: #b45f06;
+      --shadow: 0 10px 30px rgba(51, 51, 51, 0.08);
+      --radius: 8px;
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 24px;
+      background: var(--page-bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    .layout {
+      display: grid;
+      gap: 18px;
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+
+    .hero,
+    .panel {
+      background: var(--card-bg);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+      padding: 28px;
+    }
+
+    .hero h1 {
+      margin: 8px 0 10px;
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 0.98;
+      letter-spacing: -0.04em;
+    }
+
+    .hero p,
+    .panel p,
+    .panel li,
+    .field-hint,
+    .table-empty,
+    .status-row,
+    .code-help {
+      color: var(--muted);
+    }
+
+    .kicker {
+      display: inline-flex;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .chip-list,
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .chip,
+    .signal-tag {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 7px 12px;
+      font-size: 0.85rem;
+      background: rgba(255, 255, 255, 0.7);
+    }
+
+    .hero-aside {
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+
+    .status-card {
+      padding: 16px;
+      border-radius: var(--radius);
+      background: #fafafa;
+      border: 1px solid var(--line);
+    }
+
+    .status-card strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .grid {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+    }
+
+    .span-8 { grid-column: span 8; }
+    .span-4 { grid-column: span 4; }
+    .span-6 { grid-column: span 6; }
+    .span-12 { grid-column: span 12; }
+
+    .panel {
+      padding: 22px;
+    }
+
+    .panel h2 {
+      margin: 0 0 8px;
+      font-size: 1.3rem;
+      letter-spacing: -0.03em;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .metric-card {
+      padding: 16px;
+      border-radius: var(--radius);
+      background: #fff;
+      border: 1px solid var(--line);
+    }
+
+    .metric-card span {
+      display: block;
+      font-size: 0.84rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .metric-card strong {
+      font-size: 2rem;
+      letter-spacing: -0.05em;
+    }
+
+    .mode-banner {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 16px;
+      padding: 14px 16px;
+      border-radius: var(--radius);
+      background: #fff;
+      border: 1px solid var(--line);
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    button,
+    select,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      border-radius: var(--radius);
+      border: 1px solid var(--ink);
+      padding: 10px 16px;
+      background: var(--ink);
+      color: #fff;
+    }
+
+    button.secondary {
+      background: #fff;
+      color: var(--ink);
+      border-color: var(--line);
+    }
+
+    button.warning {
+      background: transparent;
+      color: var(--warning);
+      border-color: rgba(180, 95, 6, 0.35);
+    }
+
+    .field-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      margin-top: 16px;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    label {
+      font-weight: 600;
+      font-size: 0.92rem;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      background: #fff;
+      color: var(--ink);
+    }
+
+    textarea {
+      min-height: 118px;
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      resize: vertical;
+    }
+
+    .toggle {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .notice {
+      min-height: 24px;
+      margin-top: 12px;
+      font-weight: 600;
+    }
+
+    .split {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      margin-top: 16px;
+    }
+
+    .table,
+    .event-feed {
+      margin-top: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: #fff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+      font-size: 0.92rem;
+    }
+
+    th {
+      background: #f8f8f8;
+      font-size: 0.8rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    tr:last-child td,
+    .event-item:last-child {
+      border-bottom: none;
+    }
+
+    .event-item {
+      display: grid;
+      gap: 4px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    code {
+      font-family: var(--mono);
+      font-size: 0.84rem;
+      color: var(--ink);
+    }
+
+    .mono-inline {
+      font-family: var(--mono);
+      font-size: 0.83rem;
+    }
+
+    @media (max-width: 960px) {
+      .hero,
+      .span-8,
+      .span-6,
+      .span-4 {
+        grid-template-columns: 1fr;
+        grid-column: span 12;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="layout">
+    <section class="hero">
+      <div>
+        <span class="kicker">Merchant Dashboard</span>
+        <h1>Realtime Mouse Tracker for Ecwid</h1>
+        <p>This Ecwid app is designed for the store owner dashboard, not for shoppers. It gives merchants a live operations view, preview scenarios, and a same-browser self-test flow without needing a database, Redis, or a long-running Node.js server.</p>
+        <div class="chip-list">
+          <span class="chip">Static hosting friendly</span>
+          <span class="chip">Browser-only storage</span>
+          <span class="chip">Merchant self-test workflow</span>
+        </div>
+      </div>
+      <aside class="hero-aside">
+        <div class="status-card">
+          <strong data-rmt-store-label>Store context</strong>
+          <span class="status-row" data-rmt-store-id>Waiting for Ecwid payload...</span>
+        </div>
+        <div class="status-card">
+          <strong>Important limitation</strong>
+          <span class="status-row">Without a shared collector, live data works for preview mode and same-browser self-tests. Cross-visitor production tracking still requires a network endpoint.</span>
+        </div>
+      </aside>
+    </section>
+
+    <section class="grid">
+      <article class="panel span-8">
+        <h2>Live Overview</h2>
+        <p>Use this to judge current friction, attention, and broken intent while you test your Ecwid storefront from another tab on the same browser.</p>
+        <div class="mode-banner">
+          <div>
+            <strong data-rmt-mode-label>Live self-test mode</strong>
+            <div class="status-row" data-rmt-mode-help>Open your storefront in another tab using the same browser profile to see local live activity.</div>
+          </div>
+          <div class="mono-inline" data-rmt-last-updated>Waiting for data...</div>
+        </div>
+        <div class="metric-grid">
+          <div class="metric-card"><span>Active Visitors</span><strong data-rmt-metric="active_visitors">0</strong></div>
+          <div class="metric-card"><span>Queued Visitors</span><strong data-rmt-metric="queued_visitors">0</strong></div>
+          <div class="metric-card"><span>Events Per Minute</span><strong data-rmt-metric="events_per_minute">0</strong></div>
+          <div class="metric-card"><span>Rage Clicks</span><strong data-rmt-metric="rage_clicks">0</strong></div>
+          <div class="metric-card"><span>Dead Clicks</span><strong data-rmt-metric="dead_clicks">0</strong></div>
+        </div>
+        <div class="button-row">
+          <button type="button" id="refresh-btn">Refresh</button>
+          <button type="button" class="secondary" id="preview-btn">Enable Preview</button>
+          <button type="button" class="warning" id="reset-btn">Clear Session Data</button>
+        </div>
+        <div class="split">
+          <div>
+            <label for="preview-scenario">Preview scenario</label>
+            <select id="preview-scenario"></select>
+          </div>
+          <div>
+            <strong>Merchant interpretation</strong>
+            <p data-rmt-insight-summary class="status-row">No live signals yet. Use preview mode or the storefront self-test to start reading friction patterns.</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel span-4">
+        <h2>Setup</h2>
+        <p>These settings only live in the browser for this store owner. They are not sent to a backend.</p>
+        <div class="toggle">
+          <input type="checkbox" id="tracker-enabled" checked>
+          <label for="tracker-enabled">Enable storefront tracking helper</label>
+        </div>
+        <div class="field-grid">
+          <div class="field">
+            <label for="channel-key">Tracking channel</label>
+            <input type="text" id="channel-key" placeholder="demo-store">
+            <div class="field-hint">Use the same channel in your storefront config so the dashboard and storefront talk to each other.</div>
+          </div>
+          <div class="field">
+            <label for="poll-interval">Refresh interval (ms)</label>
+            <input type="number" id="poll-interval" min="500" max="10000" step="100">
+          </div>
+          <div class="field">
+            <label for="retention-seconds">Retention (seconds)</label>
+            <input type="number" id="retention-seconds" min="30" max="600" step="10">
+          </div>
+          <div class="field">
+            <label for="max-visitors">Max active visitors</label>
+            <input type="number" id="max-visitors" min="1" max="50" step="1">
+          </div>
+        </div>
+        <div class="button-row">
+          <button type="button" id="save-btn">Save Local Settings</button>
+        </div>
+        <div class="notice" id="status-message"></div>
+      </article>
+
+      <article class="panel span-6">
+        <h2>Tracked Visitors</h2>
+        <p>Visitors only appear here when the storefront helper is running in the same browser profile and channel.</p>
+        <div class="table">
+          <table>
+            <thead>
+              <tr>
+                <th>Page</th>
+                <th>Cursor</th>
+                <th>Scroll</th>
+                <th>Signals</th>
+              </tr>
+            </thead>
+            <tbody data-rmt-visitors></tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="panel span-6">
+        <h2>Recent Signals</h2>
+        <p>This feed helps merchants identify whether friction is coming from product detail, navigation, cart, or checkout actions.</p>
+        <div class="event-feed" data-rmt-events></div>
+      </article>
+
+      <article class="panel span-12">
+        <h2>Storefront Install Snippet</h2>
+        <p>Host this repo as static files, then use the generated snippet inside Ecwid Design → Custom JavaScript. The snippet points to the shared state helper and storefront tracker.</p>
+        <textarea id="install-snippet" readonly></textarea>
+        <div class="code-help">Replace <span class="mono-inline">https://YOUR-STATIC-HOST</span> with the public static URL where this repo is hosted.</div>
+      </article>
+    </section>
+  </main>
+
+  <script src="/src/shared/browser-state.js"></script>
+  <script src="/src/admin/app.js"></script>
+</body>
+</html>

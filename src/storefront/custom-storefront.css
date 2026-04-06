@@ -1,0 +1,27 @@
+/**
+ * Ecwid storefront styles used by the merchant self-test helper.
+ *
+ * These styles stay intentionally light so the shopper-facing storefront is
+ * not visually altered beyond a subtle badge that confirms the tracker script
+ * is loaded.
+ */
+
+.rmt-ecwid-ready .ecwid-productBrowser::before {
+  content: 'Realtime Mouse Tracker active';
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0 12px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  background: rgba(229, 34, 34, 0.08); /* Fire Red low opacity */
+  color: #E52222; /* Fire Red */
+  font: 700 12px/1 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.rmt-ecwid-ready .ecwid-productBrowser .ec-size .grid-product__title-inner,
+.rmt-ecwid-ready .ecwid-productBrowser .ec-size .product-details__product-title {
+  text-wrap: balance;
+}

@@ -1,0 +1,29 @@
+{
+  "name": "ecwid-realtime-mouse-tracker",
+  "version": "0.1.0",
+  "description": "Static Ecwid merchant dashboard for browser-only realtime mouse tracking self-tests.",
+  "scripts": {
+    "build": "node scripts/build-static.js",
+    "capture:marketplace": "node scripts/capture-marketplace-screenshots.js",
+    "preview": "npm run build && python3 -m http.server 4173 -d dist",
+    "lint": "node --check src/shared/browser-state.js && node --check src/admin/app.js && node --check src/storefront/custom-storefront.js",
+    "test:unit": "node --test tests/**/*.test.js",
+    "test:ui": "playwright test",
+    "test": "npm run test:unit && npm run test:ui"
+  },
+  "keywords": [
+    "ecwid",
+    "lightspeed",
+    "mouse-tracker",
+    "merchant-dashboard",
+    "static-app"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.2"
+  }
+}

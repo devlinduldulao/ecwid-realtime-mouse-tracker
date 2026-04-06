@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Realtime Mouse Tracker for Ecwid</title>
+  <link rel="icon" type="image/svg+xml" href="logo.svg">
   <link rel="stylesheet" href="https://djqizrxa6f10j.cloudfront.net/ecwid-sdk/css/1.3.20/ecwid-app-ui.css">
   <script src="https://djqizrxa6f10j.cloudfront.net/ecwid-sdk/js/1.2.9/ecwid-app.js"></script>
   <style>
@@ -339,9 +340,14 @@
 <body>
   <main class="layout">
     <section class="hero">
+      <div style="display: flex; align-items: center; gap: 24px; margin-bottom: 16px;">
+        <img src="logo.svg" alt="App Logo" width="72" height="72" style="border-radius: 16px; box-shadow: var(--shadow);">
+        <div>
+          <span class="kicker">Merchant Dashboard</span>
+          <h1 style="margin-top: 4px; margin-bottom: 0;">Realtime Mouse Tracker for Ecwid</h1>
+        </div>
+      </div>
       <div>
-        <span class="kicker">Merchant Dashboard</span>
-        <h1>Realtime Mouse Tracker for Ecwid</h1>
         <p>This Ecwid app is designed for the store owner dashboard, not for shoppers. It gives merchants a live operations view, preview scenarios, and a same-browser self-test flow without needing a database, Redis, or a long-running Node.js server.</p>
         <div class="chip-list">
           <span class="chip">Static hosting friendly</span>

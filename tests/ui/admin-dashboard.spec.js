@@ -1,5 +1,69 @@
 const { test, expect } = require('@playwright/test');
 
+async function expectMinimumContrast(page, selector, minimumRatio) {
+  const ratio = await page.locator(selector).first().evaluate((element) => {
+    function parse(color) {
+      const match = color.match(/rgba?\(([^)]+)\)/i);
+
+      if (!match) {
+        return null;
+      }
+
+      const values = match[1].split(',').map((value) => Number.parseFloat(value.trim()));
+
+      return {
+        r: values[0],
+        g: values[1],
+        b: values[2],
+        a: values.length > 3 ? values[3] : 1,
+      };
+    }
+
+    function relativeLuminance(channel) {
+      const normalized = channel / 255;
+      return normalized <= 0.03928
+        ? normalized / 12.92
+        : ((normalized + 0.055) / 1.055) ** 2.4;
+    }
+
+    function contrastRatio(foreground, background) {
+      const foregroundLuminance = 0.2126 * relativeLuminance(foreground.r)
+        + 0.7152 * relativeLuminance(foreground.g)
+        + 0.0722 * relativeLuminance(foreground.b);
+      const backgroundLuminance = 0.2126 * relativeLuminance(background.r)
+        + 0.7152 * relativeLuminance(background.g)
+        + 0.0722 * relativeLuminance(background.b);
+      const lighter = Math.max(foregroundLuminance, backgroundLuminance);
+      const darker = Math.min(foregroundLuminance, backgroundLuminance);
+
+      return (lighter + 0.05) / (darker + 0.05);
+    }
+
+    function findBackgroundColor(node) {
+      let current = node;
+
+      while (current) {
+        const parsed = parse(window.getComputedStyle(current).backgroundColor);
+
+        if (parsed && parsed.a > 0) {
+          return parsed;
+        }
+
+        current = current.parentElement;
+      }
+
+      return { r: 255, g: 255, b: 255, a: 1 };
+    }
+
+    const foreground = parse(window.getComputedStyle(element).color);
+    const background = findBackgroundColor(element);
+
+    return contrastRatio(foreground, background);
+  });
+
+  expect(ratio).toBeGreaterThanOrEqual(minimumRatio);
+}
+
 async function mockEcwidStorefront(page) {
   await page.route('https://app.ecwid.com/**', async (route) => {
     await route.fulfill({
@@ -36,6 +100,22 @@ async function saveAdminSettings(page, values) {
 }
 
 test.describe('admin dashboard', () => {
+  test('exposes an accessible label for the install snippet field', async ({ page }) => {
+    await page.goto('/public/index.html');
+
+    const snippetField = page.getByLabel('Generated install snippet');
+
+    await expect(snippetField).toBeVisible();
+    await expect(snippetField).toHaveAttribute('aria-describedby', 'install-snippet-help');
+  });
+
+  test('keeps hero text and dashboard badge above minimum contrast', async ({ page }) => {
+    await page.goto('/public/index.html');
+
+    await expectMinimumContrast(page, '.kicker', 4.5);
+    await expectMinimumContrast(page, '.hero p', 4.5);
+  });
+
   test('loads from the site root without redirecting to public/index.html', async ({ page }) => {
     const pageErrors = [];
     page.on('pageerror', (error) => pageErrors.push(error.message));

@@ -164,6 +164,7 @@
 
   function markFieldError(inputNode, message) {
     inputNode.classList.add('input-error');
+    inputNode.setAttribute('aria-invalid', 'true');
     const errorDiv = document.createElement('div');
     errorDiv.className = 'field-error';
     errorDiv.textContent = message;
@@ -172,7 +173,10 @@
 
   function clearFieldErrors() {
     document.querySelectorAll('.field-error').forEach(function (el) { el.remove(); });
-    document.querySelectorAll('.input-error').forEach(function (el) { el.classList.remove('input-error'); });
+    document.querySelectorAll('.input-error').forEach(function (el) {
+      el.classList.remove('input-error');
+      el.removeAttribute('aria-invalid');
+    });
   }
 
   function refreshSnapshot() {
@@ -361,7 +365,7 @@
 
   function showStatus(message, isError) {
     statusNode.textContent = message;
-    statusNode.style.color = isError ? '#b42318' : '#0d7a5f';
+    statusNode.style.color = isError ? '#b42318' : '#0b5d49';
     resizeIframe();
   }
 

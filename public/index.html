@@ -14,11 +14,12 @@
       --page-bg: #ffffff;
       --card-bg: #ffffff;
       --ink: #333333; /* Charcoal gray */
-      --muted: #666666;
+      --muted: #4c4c4c;
       --line: #e6e6e6;
-      --accent: #E52222; /* Fire Red */
-      --accent-soft: rgba(229, 34, 34, 0.08); /* Fire Red low opacity */
-      --warning: #b45f06;
+      --accent: #9f1d1d;
+      --accent-soft: #f9e7e6;
+      --warning: #8a4700;
+      --focus: #0f62fe;
       --shadow: 0 10px 30px rgba(51, 51, 51, 0.08);
       --radius: 8px;
       --mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
@@ -34,6 +35,7 @@
       background: var(--page-bg);
       color: var(--ink);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.5;
     }
 
     .layout {
@@ -206,6 +208,14 @@
       color: #fff;
     }
 
+    button:focus-visible,
+    select:focus-visible,
+    input:focus-visible,
+    textarea:focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 2px;
+    }
+
     button.secondary {
       background: #fff;
       color: var(--ink);
@@ -267,6 +277,12 @@
       font-weight: 600;
     }
 
+    .sub-label {
+      display: inline-block;
+      margin-top: 16px;
+      margin-bottom: 8px;
+    }
+
     .split {
       display: grid;
       gap: 12px;
@@ -323,6 +339,18 @@
       color: var(--ink);
     }
 
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
     .mono-inline {
       font-family: var(--mono);
       font-size: 0.83rem;
@@ -365,7 +393,10 @@
       margin-top: 4px;
     }
 
-    input:invalid, input.input-error {
+    input:invalid,
+    input.input-error,
+    select.input-error,
+    textarea.input-error {
       border-color: #b42318;
     }
   </style>
@@ -463,7 +494,7 @@
         <div class="button-row">
           <button type="button" id="save-btn">Save Local Settings</button>
         </div>
-        <div class="notice" id="status-message"></div>
+        <div class="notice" id="status-message" role="status" aria-live="polite"></div>
       </article>
 
       <article class="panel span-6">
@@ -471,6 +502,7 @@
         <p>Visitors only appear here when the storefront helper is running in the same browser profile and channel.</p>
         <div class="table">
           <table>
+            <caption class="sr-only">Tracked visitors with page, cursor position, scroll depth, and recent signals.</caption>
             <thead>
               <tr>
                 <th>Page</th>
@@ -493,8 +525,9 @@
       <article class="panel span-12">
         <h2>Storefront Install Snippet</h2>
         <p>Host this repo as static files, then use the generated snippet inside Ecwid Design → Custom JavaScript. The snippet points to the shared state helper and storefront tracker using the current hosted base URL.</p>
-        <textarea id="install-snippet" readonly></textarea>
-        <div class="code-help">Review the generated host before pasting it into Ecwid. On GitHub Pages it should match your published repository URL.</div>
+        <label class="sub-label" for="install-snippet">Generated install snippet</label>
+        <textarea id="install-snippet" readonly aria-describedby="install-snippet-help"></textarea>
+        <div class="code-help" id="install-snippet-help">Review the generated host before pasting it into Ecwid. On GitHub Pages it should match your published repository URL.</div>
       </article>
     </section>
   </main>

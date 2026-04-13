@@ -8,13 +8,21 @@
   }
 
   const metricNodes = document.querySelectorAll('[data-rmt-metric]');
+  const metricCards = document.querySelectorAll('[data-rmt-metric-card]');
+  const sourceBadges = document.querySelectorAll('[data-rmt-source-badge]');
   const visitorsNode = document.querySelector('[data-rmt-visitors]');
   const eventsNode = document.querySelector('[data-rmt-events]');
   const lastUpdatedNode = document.querySelector('[data-rmt-last-updated]');
   const storeIdNode = document.querySelector('[data-rmt-store-id]');
   const modeLabelNode = document.querySelector('[data-rmt-mode-label]');
+  const modeBadgeNode = document.querySelector('[data-rmt-mode-badge]');
   const modeHelpNode = document.querySelector('[data-rmt-mode-help]');
+  const modeBannerNode = document.getElementById('mode-banner');
   const insightSummaryNode = document.querySelector('[data-rmt-insight-summary]');
+  const insightSummaryLiveNode = document.querySelector('[data-rmt-insight-summary-live]');
+  const liveHelpCallout = document.getElementById('live-help-callout');
+  const previewControls = document.getElementById('preview-controls');
+  const liveInsight = document.getElementById('live-insight');
   const statusNode = document.getElementById('status-message');
   const trackerEnabledNode = document.getElementById('tracker-enabled');
   const channelKeyNode = document.getElementById('channel-key');
@@ -27,8 +35,13 @@
   const previewButton = document.getElementById('preview-btn');
   const resetButton = document.getElementById('reset-btn');
   const saveButton = document.getElementById('save-btn');
+  const copySnippetButton = document.getElementById('copy-snippet-btn');
+  const guidePanel = document.getElementById('guide-panel');
+  const guideDismiss = document.getElementById('guide-dismiss');
+  const guideReopen = document.getElementById('guide-reopen');
   const previewStorageKey = 'rmt-ecwid-preview-mode';
   const previewScenarioStorageKey = 'rmt-ecwid-preview-scenario';
+  const guideDismissedKey = 'rmt-ecwid-guide-dismissed';
   const currentScriptUrl = document.currentScript && document.currentScript.src
     ? new URL(document.currentScript.src, window.location.href)
     : null;
@@ -49,6 +62,9 @@
   });
 
   previewScenarioNode.value = previewScenario;
+
+  initGuide();
+  initTabs();
 
   if (window.EcwidApp && typeof window.EcwidApp.init === 'function') {
     const app = window.EcwidApp.init({ appId: 'realtime-mouse-tracker' });
@@ -73,6 +89,9 @@
   previewButton.addEventListener('click', togglePreview);
   resetButton.addEventListener('click', resetState);
   saveButton.addEventListener('click', saveSettings);
+  if (copySnippetButton) {
+    copySnippetButton.addEventListener('click', copySnippet);
+  }
   previewScenarioNode.addEventListener('change', () => {
     previewScenario = previewScenarioNode.value;
     window.localStorage.setItem(previewScenarioStorageKey, previewScenario);
@@ -181,18 +200,19 @@
 
   function refreshSnapshot() {
     syncPreviewButton();
+    updateModeUI();
 
     let snapshot;
 
     if (previewEnabled) {
       const preview = stateApi.createPreviewSnapshot(previewScenario);
       snapshot = preview.snapshot;
-      modeLabelNode.textContent = 'Preview mode';
-      modeHelpNode.textContent = 'Showing ' + preview.label + '. This never writes to live browser state.';
+      modeLabelNode.textContent = 'Preview mode — Sample data';
+      modeHelpNode.textContent = 'Showing "' + preview.label + '" scenario. This is sample data to help you learn the dashboard. It never writes to your real data.';
     } else {
       snapshot = stateApi.buildSnapshot(settings.channelKey);
       modeLabelNode.textContent = 'Live self-test mode';
-      modeHelpNode.textContent = 'Showing browser-local activity from channel ' + settings.channelKey + '.';
+      modeHelpNode.textContent = 'Showing real browser-local activity from channel "' + settings.channelKey + '". Open your storefront in another tab to generate data.';
     }
 
     renderMetrics(snapshot);
@@ -205,6 +225,44 @@
     resizeIframe();
   }
 
+  function updateModeUI() {
+    const isPreview = previewEnabled;
+
+    modeBannerNode.setAttribute('data-mode', isPreview ? 'preview' : 'live');
+
+    if (modeBadgeNode) {
+      modeBadgeNode.className = isPreview ? 'mode-badge mode-badge--preview' : 'mode-badge mode-badge--live';
+    }
+
+    sourceBadges.forEach(function (badge) {
+      if (isPreview) {
+        badge.className = 'source-badge source-badge--preview';
+        badge.textContent = 'Preview — Sample Data';
+      } else {
+        badge.className = 'source-badge source-badge--live';
+        badge.textContent = 'Live Data';
+      }
+    });
+
+    metricCards.forEach(function (card) {
+      if (isPreview) {
+        card.setAttribute('data-preview-watermark', '');
+      } else {
+        card.removeAttribute('data-preview-watermark');
+      }
+    });
+
+    if (previewControls) {
+      previewControls.style.display = isPreview ? '' : 'none';
+    }
+    if (liveInsight) {
+      liveInsight.style.display = isPreview ? 'none' : '';
+    }
+    if (liveHelpCallout) {
+      liveHelpCallout.style.display = isPreview ? 'none' : '';
+    }
+  }
+
   function renderMetrics(snapshot) {
     metricNodes.forEach((node) => {
       const key = node.getAttribute('data-rmt-metric');
@@ -214,7 +272,12 @@
 
   function renderVisitors(visitors) {
     if (!visitors.length) {
-      visitorsNode.innerHTML = '<tr><td colspan="4" class="table-empty">No active visitors yet. Open the storefront in the same browser or switch to preview mode.</td></tr>';
+      visitorsNode.innerHTML = '<tr><td colspan="4">' +
+        '<div class="empty-state">' +
+        '<svg width="40" height="40" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="18" stroke="#ccc" stroke-width="2"/><path d="M14 24s2 3 6 3 6-3 6-3M15 16h.01M25 16h.01" stroke="#ccc" stroke-width="2" stroke-linecap="round"/></svg>' +
+        '<strong>No visitors yet</strong>' +
+        '<p>Open your Ecwid storefront in another tab (same browser) and browse around. Visitors will appear here in real time. Or try <strong>Preview mode</strong> to see sample data.</p>' +
+        '</div></td></tr>';
       return;
     }
 
@@ -238,7 +301,11 @@
 
   function renderEvents(events) {
     if (!events.length) {
-      eventsNode.innerHTML = '<div class="event-item table-empty">No events yet. The feed fills as soon as the storefront helper flushes activity.</div>';
+      eventsNode.innerHTML = '<div class="empty-state">' +
+        '<svg width="40" height="40" viewBox="0 0 40 40" fill="none"><rect x="6" y="8" width="28" height="24" rx="3" stroke="#ccc" stroke-width="2"/><path d="M12 16h16M12 22h10" stroke="#ccc" stroke-width="2" stroke-linecap="round"/></svg>' +
+        '<strong>No signals yet</strong>' +
+        '<p>Signals appear as clicks, scrolls, and mouse movements are captured from your storefront tab. Try Preview mode to see what this looks like.</p>' +
+        '</div>';
       return;
     }
 
@@ -253,27 +320,35 @@
   }
 
   function renderInsight(snapshot) {
+    const targetNode = previewEnabled ? insightSummaryNode : insightSummaryLiveNode;
+
+    if (!targetNode) {
+      return;
+    }
+
     if (!snapshot.events || !snapshot.events.length) {
-      insightSummaryNode.textContent = 'No recent signals yet. Preview mode gives a realistic merchant walkthrough; live mode needs the storefront helper running in the same browser.';
+      targetNode.textContent = previewEnabled
+        ? 'Select a preview scenario to see a realistic sample of storefront friction data.'
+        : 'No live signals yet. Open your storefront in another tab to start tracking, or try Preview mode to see sample data.';
       return;
     }
 
     if (snapshot.rage_clicks >= 2) {
-      insightSummaryNode.textContent = 'Repeated rage clicks suggest a blocked action or unclear control state. Check product options, sticky buttons, and any delayed add-to-cart feedback.';
+      targetNode.textContent = 'Repeated rage clicks suggest a blocked action or unclear control state. Check product options, sticky buttons, and any delayed add-to-cart feedback.';
       return;
     }
 
     if (snapshot.dead_clicks >= 2) {
-      insightSummaryNode.textContent = 'Dead clicks are elevated. Merchants should review decorative banners, disabled buttons, or layout overlaps around the affected pages.';
+      targetNode.textContent = 'Dead clicks are elevated. Review decorative banners, disabled buttons, or layout overlaps around the affected pages.';
       return;
     }
 
     if (snapshot.events_per_minute >= 25) {
-      insightSummaryNode.textContent = 'Traffic is active and clean enough to compare landing-page intent against product-page follow-through. Watch where activity starts thinning out.';
+      targetNode.textContent = 'Traffic is active and clean. Compare landing-page intent against product-page follow-through. Watch where activity starts thinning out.';
       return;
     }
 
-    insightSummaryNode.textContent = 'Signals look steady. Keep testing the storefront path that matters most, then use recent events to decide whether the friction is in discovery, product detail, or checkout.';
+    targetNode.textContent = 'Signals look steady. Keep testing the storefront path that matters most, then use recent events to decide whether the friction is in discovery, product detail, or checkout.';
   }
 
   function togglePreview() {
@@ -283,7 +358,7 @@
   }
 
   function syncPreviewButton() {
-    previewButton.textContent = previewEnabled ? 'Return to Live' : 'Enable Preview';
+    previewButton.textContent = previewEnabled ? 'Return to Live Data' : 'Try Preview (Sample Data)';
     previewButton.setAttribute('aria-pressed', previewEnabled ? 'true' : 'false');
   }
 
@@ -373,5 +448,87 @@
     const div = document.createElement('div');
     div.appendChild(document.createTextNode(String(value)));
     return div.innerHTML;
+  }
+
+  function initGuide() {
+    if (!guidePanel || !guideDismiss || !guideReopen) {
+      return;
+    }
+
+    if (window.localStorage.getItem(guideDismissedKey) === 'yes') {
+      guidePanel.style.display = 'none';
+      guideReopen.style.display = '';
+    }
+
+    guideDismiss.addEventListener('click', function () {
+      guidePanel.style.display = 'none';
+      guideReopen.style.display = '';
+      window.localStorage.setItem(guideDismissedKey, 'yes');
+      resizeIframe();
+    });
+
+    guideReopen.addEventListener('click', function () {
+      guidePanel.style.display = '';
+      guideReopen.style.display = 'none';
+      window.localStorage.removeItem(guideDismissedKey);
+      resizeIframe();
+    });
+  }
+
+  function initTabs() {
+    var tabButtons = document.querySelectorAll('.tab-btn[data-tab]');
+    tabButtons.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var targetId = btn.getAttribute('data-tab');
+        tabButtons.forEach(function (other) {
+          other.setAttribute('aria-selected', 'false');
+        });
+        btn.setAttribute('aria-selected', 'true');
+
+        var tabContents = btn.closest('.panel').querySelectorAll('.tab-content');
+        tabContents.forEach(function (content) {
+          if (content.id === targetId) {
+            content.setAttribute('data-active', '');
+          } else {
+            content.removeAttribute('data-active');
+          }
+        });
+        resizeIframe();
+      });
+    });
+  }
+
+  function copySnippet() {
+    if (!installSnippetNode || !installSnippetNode.value) {
+      return;
+    }
+
+    if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+      navigator.clipboard.writeText(installSnippetNode.value).then(function () {
+        showCopyFeedback();
+      }).catch(function () {
+        fallbackCopy();
+      });
+    } else {
+      fallbackCopy();
+    }
+  }
+
+  function fallbackCopy() {
+    installSnippetNode.select();
+    document.execCommand('copy');
+    showCopyFeedback();
+  }
+
+  function showCopyFeedback() {
+    if (!copySnippetButton) {
+      return;
+    }
+
+    var originalText = copySnippetButton.textContent;
+    copySnippetButton.textContent = 'Copied!';
+    setTimeout(function () {
+      copySnippetButton.textContent = originalText;
+    }, 2000);
   }
 })();

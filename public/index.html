@@ -13,7 +13,7 @@
     :root {
       --page-bg: #ffffff;
       --card-bg: #ffffff;
-      --ink: #333333; /* Charcoal gray */
+      --ink: #333333;
       --muted: #4c4c4c;
       --line: #e6e6e6;
       --accent: #9f1d1d;
@@ -23,11 +23,15 @@
       --shadow: 0 10px 30px rgba(51, 51, 51, 0.08);
       --radius: 8px;
       --mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      --live-color: #0b7a3e;
+      --live-bg: #e8f5e9;
+      --live-border: #a5d6a7;
+      --preview-color: #8a4700;
+      --preview-bg: #fff8e1;
+      --preview-border: #ffcc80;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -45,8 +49,7 @@
       margin: 0 auto;
     }
 
-    .hero,
-    .panel {
+    .hero, .panel {
       background: var(--card-bg);
       border: 1px solid var(--line);
       border-radius: var(--radius);
@@ -67,13 +70,7 @@
       letter-spacing: -0.04em;
     }
 
-    .hero p,
-    .panel p,
-    .panel li,
-    .field-hint,
-    .table-empty,
-    .status-row,
-    .code-help {
+    .hero p, .panel p, .panel li, .field-hint, .table-empty, .status-row, .code-help {
       color: var(--muted);
     }
 
@@ -89,16 +86,14 @@
       text-transform: uppercase;
     }
 
-    .chip-list,
-    .toolbar {
+    .chip-list, .toolbar {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
       align-items: center;
     }
 
-    .chip,
-    .signal-tag {
+    .chip, .signal-tag {
       border: 1px solid var(--line);
       border-radius: var(--radius);
       padding: 7px 12px;
@@ -138,9 +133,7 @@
     .span-6 { grid-column: span 6; }
     .span-12 { grid-column: span 12; }
 
-    .panel {
-      padding: 22px;
-    }
+    .panel { padding: 22px; }
 
     .panel h2 {
       margin: 0 0 8px;
@@ -148,6 +141,67 @@
       letter-spacing: -0.03em;
     }
 
+    /* ── Data-source mode banner ── */
+    .mode-banner {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-top: 16px;
+      padding: 14px 16px;
+      border-radius: var(--radius);
+      border: 2px solid var(--live-border);
+      background: var(--live-bg);
+      transition: background .2s, border-color .2s;
+    }
+
+    .mode-banner[data-mode="preview"] {
+      border-color: var(--preview-border);
+      background: var(--preview-bg);
+    }
+
+    .mode-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .mode-badge--live {
+      background: var(--live-color);
+      color: #fff;
+    }
+
+    .mode-badge--preview {
+      background: var(--preview-color);
+      color: #fff;
+    }
+
+    .mode-badge__dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .mode-badge--live .mode-badge__dot {
+      background: #4caf50;
+      box-shadow: 0 0 6px #4caf50;
+      animation: pulse-dot 1.4s infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* ── Metric cards ── */
     .metric-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -160,6 +214,7 @@
       border-radius: var(--radius);
       background: #fff;
       border: 1px solid var(--line);
+      position: relative;
     }
 
     .metric-card span {
@@ -174,16 +229,180 @@
       letter-spacing: -0.05em;
     }
 
-    .mode-banner {
+    /* Preview watermark on metric cards */
+    .metric-card[data-preview-watermark]::after {
+      content: 'SAMPLE';
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--preview-color);
+      opacity: 0.6;
+    }
+
+    /* ── Getting Started guide ── */
+    .guide-panel {
+      border: 2px solid #bbdefb;
+      background: linear-gradient(135deg, #e3f2fd 0%, #f5f9ff 100%);
+    }
+
+    .guide-panel h2 {
       display: flex;
-      justify-content: space-between;
-      gap: 12px;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .guide-dismiss {
+      margin-left: auto;
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 0.82rem;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: var(--radius);
+    }
+
+    .guide-dismiss:hover { background: rgba(0,0,0,0.06); }
+
+    .guide-steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
       margin-top: 16px;
-      padding: 14px 16px;
+      counter-reset: step;
+    }
+
+    .guide-step {
+      counter-increment: step;
+      padding: 18px;
       border-radius: var(--radius);
       background: #fff;
-      border: 1px solid var(--line);
+      border: 1px solid #bbdefb;
+      position: relative;
     }
+
+    .guide-step::before {
+      content: "Step " counter(step);
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #1565c0;
+      margin-bottom: 8px;
+    }
+
+    .guide-step strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 0.95rem;
+    }
+
+    .guide-step p {
+      margin: 0;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .guide-reopen {
+      display: none;
+      background: none;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.8rem;
+      padding: 6px 12px;
+      cursor: pointer;
+      border-radius: var(--radius);
+      margin-bottom: 4px;
+    }
+
+    .guide-reopen:hover { background: #f5f5f5; }
+
+    /* ── Panel header with source badge ── */
+    .panel-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .panel-header h2 { margin: 0; }
+
+    .source-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .source-badge--live {
+      background: var(--live-bg);
+      color: var(--live-color);
+      border: 1px solid var(--live-border);
+    }
+
+    .source-badge--preview {
+      background: var(--preview-bg);
+      color: var(--preview-color);
+      border: 1px solid var(--preview-border);
+    }
+
+    /* ── Info callout boxes ── */
+    .info-callout {
+      display: flex;
+      gap: 10px;
+      padding: 12px 16px;
+      margin-top: 12px;
+      border-radius: var(--radius);
+      background: #f5f9ff;
+      border: 1px solid #bbdefb;
+      font-size: 0.84rem;
+      color: #1a5276;
+    }
+
+    .info-callout svg {
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* ── Tab switcher ── */
+    .tab-bar {
+      display: flex;
+      gap: 0;
+      border-bottom: 2px solid var(--line);
+      margin-bottom: 16px;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      padding: 10px 18px;
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: color .15s, border-color .15s;
+    }
+
+    .tab-btn:hover { color: var(--ink); }
+
+    .tab-btn[aria-selected="true"] {
+      color: var(--ink);
+      border-bottom-color: var(--ink);
+    }
+
+    .tab-content { display: none; }
+    .tab-content[data-active] { display: block; }
 
     .button-row {
       display: flex;
@@ -192,12 +411,7 @@
       margin-top: 16px;
     }
 
-    button,
-    select,
-    input,
-    textarea {
-      font: inherit;
-    }
+    button, select, input, textarea { font: inherit; }
 
     button {
       cursor: pointer;
@@ -208,10 +422,7 @@
       color: #fff;
     }
 
-    button:focus-visible,
-    select:focus-visible,
-    input:focus-visible,
-    textarea:focus-visible {
+    button:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible {
       outline: 3px solid var(--focus);
       outline-offset: 2px;
     }
@@ -235,20 +446,11 @@
       margin-top: 16px;
     }
 
-    .field {
-      display: grid;
-      gap: 8px;
-    }
+    .field { display: grid; gap: 8px; }
 
-    label {
-      font-weight: 600;
-      font-size: 0.92rem;
-    }
+    label { font-weight: 600; font-size: 0.92rem; }
 
-    input[type="text"],
-    input[type="number"],
-    select,
-    textarea {
+    input[type="text"], input[type="number"], select, textarea {
       width: 100%;
       border: 1px solid var(--line);
       border-radius: var(--radius);
@@ -290,8 +492,7 @@
       margin-top: 16px;
     }
 
-    .table,
-    .event-feed {
+    .table, .event-feed {
       margin-top: 16px;
       border: 1px solid var(--line);
       border-radius: var(--radius);
@@ -299,13 +500,9 @@
       background: #fff;
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
+    table { width: 100%; border-collapse: collapse; }
 
-    th,
-    td {
+    th, td {
       padding: 12px 14px;
       border-bottom: 1px solid var(--line);
       text-align: left;
@@ -321,10 +518,7 @@
       color: var(--muted);
     }
 
-    tr:last-child td,
-    .event-item:last-child {
-      border-bottom: none;
-    }
+    tr:last-child td, .event-item:last-child { border-bottom: none; }
 
     .event-item {
       display: grid;
@@ -340,27 +534,75 @@
     }
 
     .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
     }
 
-    .mono-inline {
-      font-family: var(--mono);
-      font-size: 0.83rem;
+    .mono-inline { font-family: var(--mono); font-size: 0.83rem; }
+
+    /* ── Empty state illustrations ── */
+    .empty-state {
+      text-align: center;
+      padding: 32px 16px;
+      color: var(--muted);
     }
+
+    .empty-state svg { margin-bottom: 12px; opacity: 0.5; }
+
+    .empty-state strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--ink);
+      font-size: 0.95rem;
+    }
+
+    .empty-state p {
+      margin: 0;
+      font-size: 0.84rem;
+      max-width: 340px;
+      margin-inline: auto;
+    }
+
+    /* ── How it works collapsible ── */
+    details.how-it-works {
+      margin-top: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fafafa;
+    }
+
+    details.how-it-works summary {
+      padding: 12px 16px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.88rem;
+      list-style: none;
+    }
+
+    details.how-it-works summary::-webkit-details-marker { display: none; }
+
+    details.how-it-works summary::before {
+      content: '▸ ';
+      font-size: 0.8rem;
+    }
+
+    details.how-it-works[open] summary::before { content: '▾ '; }
+
+    .how-content {
+      padding: 0 16px 16px;
+      font-size: 0.84rem;
+      color: var(--muted);
+    }
+
+    .how-content ol {
+      margin: 8px 0;
+      padding-left: 20px;
+    }
+
+    .how-content li { margin-bottom: 6px; }
 
     @media (max-width: 960px) {
-      .hero,
-      .span-8,
-      .span-6,
-      .span-4 {
+      .hero, .span-8, .span-6, .span-4 {
         grid-template-columns: 1fr;
         grid-column: span 12;
       }
@@ -373,6 +615,7 @@
       .field-grid { grid-template-columns: 1fr; }
       .metric-grid { grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); }
       .mode-banner { flex-direction: column; gap: 8px; }
+      .guide-steps { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 480px) {
@@ -384,6 +627,7 @@
       .button-row button { width: 100%; }
       .metric-card strong { font-size: 1.5rem; }
       th, td { padding: 8px 10px; font-size: 0.84rem; }
+      .tab-btn { padding: 8px 12px; font-size: 0.82rem; }
     }
 
     .field-error {
@@ -393,113 +637,212 @@
       margin-top: 4px;
     }
 
-    input:invalid,
-    input.input-error,
-    select.input-error,
-    textarea.input-error {
+    input:invalid, input.input-error, select.input-error, textarea.input-error {
       border-color: #b42318;
     }
   </style>
 </head>
 <body>
   <main class="layout">
-    <section class="hero">
-      <div style="display: flex; align-items: center; gap: 24px; margin-bottom: 16px;">
-        <div>
-          <span class="kicker">Merchant Dashboard</span>
-          <h1 style="margin-top: 4px; margin-bottom: 0;">Realtime Mouse Tracker for Ecwid</h1>
+
+    <!-- ── Getting Started Guide ── -->
+    <button type="button" class="guide-reopen" id="guide-reopen" aria-label="Show getting started guide">Show Getting Started Guide</button>
+    <section class="panel guide-panel span-12" id="guide-panel">
+      <h2>
+        Getting Started
+        <button type="button" class="guide-dismiss" id="guide-dismiss" aria-label="Dismiss guide">Dismiss</button>
+      </h2>
+      <p>This app tracks mouse movements, clicks, and scroll depth on your Ecwid storefront, then shows the data right here in your admin dashboard. Follow these three steps to start seeing <strong>real visitor data</strong>.</p>
+      <div class="guide-steps">
+        <div class="guide-step">
+          <strong>Install the snippet on your storefront</strong>
+          <p>Scroll down to the <em>Storefront Install Snippet</em> section, copy the generated code, and paste it into your Ecwid admin under <strong>Design &rarr; Custom JavaScript</strong>. This enables tracking on your live store.</p>
+        </div>
+        <div class="guide-step">
+          <strong>Open your storefront in the same browser</strong>
+          <p>Open your Ecwid storefront in another tab (same browser, same profile). Browse around, click products, scroll pages. The tracker collects your actions using browser-local storage.</p>
+        </div>
+        <div class="guide-step">
+          <strong>Come back here to see live data</strong>
+          <p>Return to this dashboard tab. The <strong>Live Overview</strong> will show real metrics from your storefront tab. All panels marked <span style="color: var(--live-color); font-weight: 700;">LIVE DATA</span> show real activity.</p>
         </div>
       </div>
+      <details class="how-it-works" style="margin-top: 18px;">
+        <summary>How does this app work without a server?</summary>
+        <div class="how-content">
+          <p>This app uses <strong>browser localStorage</strong> and <strong>BroadcastChannel API</strong> to share data between your storefront tab and this dashboard tab, all within the same browser session. No data leaves your browser. No database or paid service is needed.</p>
+          <ol>
+            <li>Your storefront tab writes mouse and click events to localStorage.</li>
+            <li>This dashboard tab reads that data and displays it here in real time.</li>
+            <li>Both tabs must be in the same browser and same profile for the data to flow.</li>
+          </ol>
+          <p><strong>Important:</strong> This means the data you see here comes from <em>your own</em> browsing session as a self-test. To track actual customers across different browsers, a backend server would be needed (not included in this free app).</p>
+        </div>
+      </details>
+    </section>
+
+    <!-- ── Hero header ── -->
+    <section class="hero">
       <div>
-        <p>This Ecwid app is designed for the store owner dashboard, not for shoppers. It gives merchants a live operations view, preview scenarios, and a same-browser self-test flow without needing a database, Redis, or a long-running Node.js server.</p>
-        <div class="chip-list">
-          <span class="chip">Static hosting friendly</span>
+        <span class="kicker">Merchant Dashboard</span>
+        <h1>Realtime Mouse Tracker</h1>
+        <p>See how visitors interact with your Ecwid storefront in real time. Detect rage clicks, dead clicks, and scroll friction without any server or paid tools.</p>
+        <div class="chip-list" style="margin-top: 12px;">
+          <span class="chip">100% Free</span>
+          <span class="chip">No database needed</span>
           <span class="chip">Browser-only storage</span>
-          <span class="chip">Merchant self-test workflow</span>
         </div>
       </div>
       <aside class="hero-aside">
         <div class="status-card">
-          <strong data-rmt-store-label>Store context</strong>
+          <strong>Store context</strong>
           <span class="status-row" data-rmt-store-id>Waiting for Ecwid payload...</span>
         </div>
         <div class="status-card">
-          <strong>Important limitation</strong>
-          <span class="status-row">Without a shared collector, live data works for preview mode and same-browser self-tests. Cross-visitor production tracking still requires a network endpoint.</span>
+          <strong>Data scope</strong>
+          <span class="status-row">Data is stored locally in this browser only. It shows activity from storefront tabs open in the same browser profile.</span>
         </div>
       </aside>
     </section>
 
+    <!-- ── Prominent data mode indicator ── -->
     <section class="grid">
-      <article class="panel span-8">
-        <h2>Live Overview</h2>
-        <p>Use this to judge current friction, attention, and broken intent while you test your Ecwid storefront from another tab on the same browser.</p>
-        <div class="mode-banner">
+
+      <article class="panel span-8" id="overview-panel">
+        <div class="panel-header">
+          <h2>Live Overview</h2>
+          <span class="source-badge source-badge--live" data-rmt-source-badge>Live Data</span>
+        </div>
+
+        <div class="mode-banner" id="mode-banner" data-mode="live">
           <div>
-            <strong data-rmt-mode-label>Live self-test mode</strong>
-            <div class="status-row" data-rmt-mode-help>Open your storefront in another tab using the same browser profile to see local live activity.</div>
+            <span class="mode-badge mode-badge--live" data-rmt-mode-badge>
+              <span class="mode-badge__dot"></span>
+              <span data-rmt-mode-label>Live self-test mode</span>
+            </span>
+            <div class="status-row" style="margin-top: 6px;" data-rmt-mode-help>Open your storefront in another tab (same browser) to see live activity here.</div>
           </div>
           <div class="mono-inline" data-rmt-last-updated>Waiting for data...</div>
         </div>
-        <div class="metric-grid" aria-live="polite" aria-atomic="true">
-          <div class="metric-card"><span>Active Visitors</span><strong data-rmt-metric="active_visitors">0</strong></div>
-          <div class="metric-card"><span>Queued Visitors</span><strong data-rmt-metric="queued_visitors">0</strong></div>
-          <div class="metric-card"><span>Events Per Minute</span><strong data-rmt-metric="events_per_minute">0</strong></div>
-          <div class="metric-card"><span>Rage Clicks</span><strong data-rmt-metric="rage_clicks">0</strong></div>
-          <div class="metric-card"><span>Dead Clicks</span><strong data-rmt-metric="dead_clicks">0</strong></div>
+
+        <div class="info-callout" id="live-help-callout">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#1565c0" stroke-width="1.5"/><path d="M8 7v4M8 5h.01" stroke="#1565c0" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <span><strong>Where is my real data?</strong> This dashboard shows <em>real</em> data when your storefront is open in another tab of the same browser. Switch to <strong>Preview</strong> to see sample data and learn what each metric means.</span>
         </div>
+
+        <div class="metric-grid" aria-live="polite" aria-atomic="true">
+          <div class="metric-card" data-rmt-metric-card><span>Active Visitors</span><strong data-rmt-metric="active_visitors">0</strong></div>
+          <div class="metric-card" data-rmt-metric-card><span>Queued Visitors</span><strong data-rmt-metric="queued_visitors">0</strong></div>
+          <div class="metric-card" data-rmt-metric-card><span>Events Per Minute</span><strong data-rmt-metric="events_per_minute">0</strong></div>
+          <div class="metric-card" data-rmt-metric-card><span>Rage Clicks</span><strong data-rmt-metric="rage_clicks">0</strong></div>
+          <div class="metric-card" data-rmt-metric-card><span>Dead Clicks</span><strong data-rmt-metric="dead_clicks">0</strong></div>
+        </div>
+
         <div class="button-row">
           <button type="button" id="refresh-btn">Refresh</button>
-          <button type="button" class="secondary" id="preview-btn">Enable Preview</button>
+          <button type="button" class="secondary" id="preview-btn">Try Preview (Sample Data)</button>
           <button type="button" class="warning" id="reset-btn">Clear Session Data</button>
         </div>
-        <div class="split">
+
+        <div class="split" id="preview-controls" style="display: none;">
           <div>
             <label for="preview-scenario">Preview scenario</label>
             <select id="preview-scenario"></select>
           </div>
           <div>
-            <strong>Merchant interpretation</strong>
-            <p data-rmt-insight-summary class="status-row">No live signals yet. Use preview mode or the storefront self-test to start reading friction patterns.</p>
+            <strong>What this scenario shows</strong>
+            <p data-rmt-insight-summary class="status-row">Select a preview scenario to see a realistic sample of storefront friction data.</p>
           </div>
+        </div>
+
+        <div id="live-insight" style="margin-top: 16px;">
+          <strong>Merchant interpretation</strong>
+          <p data-rmt-insight-summary-live class="status-row">No live signals yet. Open your storefront in another tab to start tracking, or try Preview mode to see sample data.</p>
         </div>
       </article>
 
+      <!-- ── Setup panel with tabs ── -->
       <article class="panel span-4">
         <h2>Setup</h2>
-        <p>These settings only live in the browser for this store owner. They are not sent to a backend.</p>
-        <div class="toggle">
-          <input type="checkbox" id="tracker-enabled" checked>
-          <label for="tracker-enabled">Enable storefront tracking helper</label>
+        <div class="tab-bar" role="tablist">
+          <button class="tab-btn" role="tab" aria-selected="true" data-tab="settings-tab">Settings</button>
+          <button class="tab-btn" role="tab" aria-selected="false" data-tab="help-tab">Help</button>
         </div>
-        <div class="field-grid">
-          <div class="field">
-            <label for="channel-key">Tracking channel</label>
-            <input type="text" id="channel-key" placeholder="demo-store">
-            <div class="field-hint">Use the same channel in your storefront config so the dashboard and storefront talk to each other.</div>
+
+        <div class="tab-content" id="settings-tab" data-active>
+          <p style="margin-top: 0;">Settings are stored locally in this browser. Nothing is sent to a server.</p>
+          <div class="toggle">
+            <input type="checkbox" id="tracker-enabled" checked>
+            <label for="tracker-enabled">Enable storefront tracking</label>
           </div>
-          <div class="field">
-            <label for="poll-interval">Refresh interval (ms)</label>
-            <input type="number" id="poll-interval" min="500" max="10000" step="100">
+          <div class="field-grid">
+            <div class="field">
+              <label for="channel-key">Tracking channel</label>
+              <input type="text" id="channel-key" placeholder="demo-store">
+              <div class="field-hint">Must match the channel key in your storefront snippet.</div>
+            </div>
+            <div class="field">
+              <label for="poll-interval">Refresh interval (ms)</label>
+              <input type="number" id="poll-interval" min="500" max="10000" step="100">
+            </div>
+            <div class="field">
+              <label for="retention-seconds">Retention (seconds)</label>
+              <input type="number" id="retention-seconds" min="30" max="600" step="10">
+            </div>
+            <div class="field">
+              <label for="max-visitors">Max active visitors</label>
+              <input type="number" id="max-visitors" min="1" max="50" step="1">
+            </div>
           </div>
-          <div class="field">
-            <label for="retention-seconds">Retention (seconds)</label>
-            <input type="number" id="retention-seconds" min="30" max="600" step="10">
+          <div class="button-row">
+            <button type="button" id="save-btn">Save Local Settings</button>
           </div>
-          <div class="field">
-            <label for="max-visitors">Max active visitors</label>
-            <input type="number" id="max-visitors" min="1" max="50" step="1">
+          <div class="notice" id="status-message" role="status" aria-live="polite"></div>
+        </div>
+
+        <div class="tab-content" id="help-tab">
+          <div style="font-size: 0.88rem;">
+            <strong style="display: block; margin-bottom: 10px;">Frequently Asked Questions</strong>
+
+            <details style="margin-bottom: 10px;">
+              <summary style="cursor: pointer; font-weight: 600; font-size: 0.85rem;">Where do I find my real metrics?</summary>
+              <p style="margin: 6px 0 0; font-size: 0.84rem; color: var(--muted);">Your real metrics appear in the <strong>Live Overview</strong> panel whenever your storefront is open in another tab of the same browser. Look for the green <span style="color: var(--live-color);">LIVE DATA</span> badge.</p>
+            </details>
+
+            <details style="margin-bottom: 10px;">
+              <summary style="cursor: pointer; font-weight: 600; font-size: 0.85rem;">How do I know if data is real or sample?</summary>
+              <p style="margin: 6px 0 0; font-size: 0.84rem; color: var(--muted);">Every data panel has a colored badge. Green means <strong>live data</strong> from your storefront. Orange means <strong>preview/sample data</strong>. Metric cards in preview mode also show a "SAMPLE" watermark.</p>
+            </details>
+
+            <details style="margin-bottom: 10px;">
+              <summary style="cursor: pointer; font-weight: 600; font-size: 0.85rem;">What is Preview mode?</summary>
+              <p style="margin: 6px 0 0; font-size: 0.84rem; color: var(--muted);">Preview mode shows realistic but <strong>fake sample data</strong> so you can see what the dashboard looks like with active visitors. It never writes to your real data. Use it to learn the interface.</p>
+            </details>
+
+            <details style="margin-bottom: 10px;">
+              <summary style="cursor: pointer; font-weight: 600; font-size: 0.85rem;">What are rage clicks and dead clicks?</summary>
+              <p style="margin: 6px 0 0; font-size: 0.84rem; color: var(--muted);"><strong>Rage clicks</strong> happen when someone clicks the same area rapidly, usually because a button isn't responding. <strong>Dead clicks</strong> happen when someone clicks something that isn't interactive, like a banner image.</p>
+            </details>
+
+            <details style="margin-bottom: 10px;">
+              <summary style="cursor: pointer; font-weight: 600; font-size: 0.85rem;">Can I track visitors from other browsers?</summary>
+              <p style="margin: 6px 0 0; font-size: 0.84rem; color: var(--muted);">No. This app uses browser-local storage (no server). It only tracks visitors in tabs within the same browser profile. For cross-browser tracking, a backend server would be required.</p>
+            </details>
+
+            <details>
+              <summary style="cursor: pointer; font-weight: 600; font-size: 0.85rem;">Why do I see zero visitors?</summary>
+              <p style="margin: 6px 0 0; font-size: 0.84rem; color: var(--muted);">Make sure: (1) the install snippet is added to your storefront, (2) you have your storefront open in another tab, (3) the tracking channel matches in both places, (4) tracking is enabled. Try clicking around your storefront tab, then came back here.</p>
+            </details>
           </div>
         </div>
-        <div class="button-row">
-          <button type="button" id="save-btn">Save Local Settings</button>
-        </div>
-        <div class="notice" id="status-message" role="status" aria-live="polite"></div>
       </article>
 
+      <!-- ── Visitors table ── -->
       <article class="panel span-6">
-        <h2>Tracked Visitors</h2>
-        <p>Visitors only appear here when the storefront helper is running in the same browser profile and channel.</p>
+        <div class="panel-header">
+          <h2>Tracked Visitors</h2>
+          <span class="source-badge source-badge--live" data-rmt-source-badge>Live Data</span>
+        </div>
         <div class="table">
           <table>
             <caption class="sr-only">Tracked visitors with page, cursor position, scroll depth, and recent signals.</caption>
@@ -516,18 +859,26 @@
         </div>
       </article>
 
+      <!-- ── Events feed ── -->
       <article class="panel span-6">
-        <h2>Recent Signals</h2>
-        <p>This feed helps merchants identify whether friction is coming from product detail, navigation, cart, or checkout actions.</p>
+        <div class="panel-header">
+          <h2>Recent Signals</h2>
+          <span class="source-badge source-badge--live" data-rmt-source-badge>Live Data</span>
+        </div>
         <div class="event-feed" data-rmt-events></div>
       </article>
 
+      <!-- ── Install snippet ── -->
       <article class="panel span-12">
         <h2>Storefront Install Snippet</h2>
-        <p>Host this repo as static files, then use the generated snippet inside Ecwid Design → Custom JavaScript. The snippet points to the shared state helper and storefront tracker using the current hosted base URL.</p>
+        <div class="info-callout" style="margin-top: 0; margin-bottom: 14px;">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#1565c0" stroke-width="1.5"/><path d="M8 7v4M8 5h.01" stroke="#1565c0" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <span><strong>Required for real data.</strong> Copy this snippet and paste it into your Ecwid admin at <strong>Design &rarr; Custom JavaScript</strong>. Without this snippet, the dashboard can only show preview/sample data.</span>
+        </div>
         <label class="sub-label" for="install-snippet">Generated install snippet</label>
         <textarea id="install-snippet" readonly aria-describedby="install-snippet-help"></textarea>
-        <div class="code-help" id="install-snippet-help">Review the generated host before pasting it into Ecwid. On GitHub Pages it should match your published repository URL.</div>
+        <div class="code-help" id="install-snippet-help">Review the generated host URL before pasting. On GitHub Pages it should match your published repository URL.</div>
+        <button type="button" id="copy-snippet-btn" class="secondary" style="margin-top: 10px;">Copy Snippet to Clipboard</button>
       </article>
     </section>
   </main>

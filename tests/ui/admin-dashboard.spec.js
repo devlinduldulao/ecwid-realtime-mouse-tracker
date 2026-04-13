@@ -123,7 +123,7 @@ test.describe('admin dashboard', () => {
     await page.goto('/');
 
     await expect(page).toHaveURL(/\/$/);
-    await expect(page.getByRole('heading', { name: 'Realtime Mouse Tracker for Ecwid' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Realtime Mouse Tracker' })).toBeVisible();
     await expect(page.locator('#install-snippet')).toHaveValue(/http:\/\/127\.0\.0\.1:\d+\/src\/shared\/browser-state\.js/);
 
     expect(pageErrors).toEqual([]);
@@ -135,11 +135,11 @@ test.describe('admin dashboard', () => {
 
     await page.goto('/public/index.html');
 
-    await expect(page.getByRole('heading', { name: 'Realtime Mouse Tracker for Ecwid' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Realtime Mouse Tracker' })).toBeVisible();
     await expect(page.getByText('Standalone preview · store demo-store')).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Enable Preview' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Try Preview (Sample Data)' })).toBeVisible();
     await expect(page.locator('[data-rmt-metric="active_visitors"]')).toHaveText('0');
-    await expect(page.getByText('No active visitors yet. Open the storefront in the same browser or switch to preview mode.')).toBeVisible();
+    await expect(page.getByText('No visitors yet')).toBeVisible();
 
     expect(pageErrors).toEqual([]);
   });
@@ -147,10 +147,10 @@ test.describe('admin dashboard', () => {
   test('toggles preview mode and renders fake dashboard data', async ({ page }) => {
     await page.goto('/public/index.html');
 
-    await page.getByRole('button', { name: 'Enable Preview' }).click();
+    await page.getByRole('button', { name: 'Try Preview (Sample Data)' }).click();
 
-    await expect(page.getByRole('button', { name: 'Return to Live' })).toBeVisible();
-    await expect(page.getByText('Showing Product page friction. This never writes to live browser state.')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Return to Live Data' })).toBeVisible();
+    await expect(page.getByText('Preview mode — Sample data')).toBeVisible();
     await expect(page.locator('[data-rmt-metric="active_visitors"]')).toHaveText('5');
     await expect(page.locator('[data-rmt-metric="rage_clicks"]')).toHaveText('3');
     await expect(page.getByText('Bamboo Desk Lamp')).toBeVisible();
@@ -159,10 +159,10 @@ test.describe('admin dashboard', () => {
 
   test('switches preview scenarios and updates fake data', async ({ page }) => {
     await page.goto('/public/index.html');
-    await page.getByRole('button', { name: 'Enable Preview' }).click();
+    await page.getByRole('button', { name: 'Try Preview (Sample Data)' }).click();
     await page.locator('#preview-scenario').selectOption('checkout_hesitation');
 
-    await expect(page.getByText('Showing Checkout hesitation. This never writes to live browser state.')).toBeVisible();
+    await expect(page.getByText('Showing "Checkout hesitation" scenario')).toBeVisible();
     await expect(page.locator('[data-rmt-metric="dead_clicks"]')).toHaveText('4');
     await expect(page.locator('[data-rmt-metric="active_visitors"]')).toHaveText('3');
     await expect(page.locator('[data-rmt-visitors]').getByText('Checkout', { exact: true })).toBeVisible();
@@ -240,7 +240,7 @@ test.describe('admin dashboard', () => {
 
     await expect(page.getByText('Cleared browser-local session data for channel demo-store.')).toBeVisible();
     await expect(page.locator('[data-rmt-metric="active_visitors"]')).toHaveText('0');
-    await expect(page.getByText('No active visitors yet. Open the storefront in the same browser or switch to preview mode.')).toBeVisible();
+    await expect(page.getByText('No visitors yet')).toBeVisible();
   });
 
   test('ingests real storefront activity into the live dashboard without using preview mode', async ({ browser }) => {
@@ -252,7 +252,7 @@ test.describe('admin dashboard', () => {
 
     await adminPage.goto('/public/index.html');
     await saveAdminSettings(adminPage, { channelKey: 'ecwid-demo-store', enabled: true });
-    await expect(adminPage.getByRole('button', { name: 'Enable Preview' })).toBeVisible();
+    await expect(adminPage.getByRole('button', { name: 'Try Preview (Sample Data)' })).toBeVisible();
     await expect(adminPage.locator('[data-rmt-mode-label]')).toHaveText('Live self-test mode');
 
     await storefrontPage.goto('/public/storefront-test.html');
@@ -295,7 +295,7 @@ test.describe('admin dashboard', () => {
     await adminPage.getByRole('button', { name: 'Refresh' }).click();
 
     await expect(adminPage.locator('[data-rmt-metric="active_visitors"]')).toHaveText('0');
-    await expect(adminPage.getByText('No active visitors yet. Open the storefront in the same browser or switch to preview mode.')).toBeVisible();
+    await expect(adminPage.getByText('No visitors yet')).toBeVisible();
 
     await context.close();
   });
@@ -320,7 +320,7 @@ test.describe('admin dashboard', () => {
 
     await expect(adminPage.locator('[data-rmt-metric="active_visitors"]')).toHaveText('0');
     await expect(adminPage.locator('[data-rmt-metric="events_per_minute"]')).toHaveText('0');
-    await expect(adminPage.getByText('No active visitors yet. Open the storefront in the same browser or switch to preview mode.')).toBeVisible();
+    await expect(adminPage.getByText('No visitors yet')).toBeVisible();
 
     await context.close();
   });
